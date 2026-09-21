@@ -1,0 +1,47 @@
+%% Zero-state response of y'' + 4y' + y = u(t)
+% u(t) = unit step, initial conditions = 0 (system starts at rest)
+clear; clc; close all;
+
+%% Build the system (same as before)
+numf = [1];
+denf = [1 4 1];
+tfsys = tf(numf, denf)
+
+sys = ss(tfsys)
+
+% Same state ordering as the zero-input script (identical tf->ss call):
+% x1 = ydot, x2 = y. Check the printed 'sys' above (c = [0 1]) to confirm.
+
+%% Zero-state response: x0 = 0, u(t) = 1 (unit step)
+t  = 0:0.01:10;
+u  = ones(size(t));   % unit step input
+x0 = [0; 0];          % system starts completely at rest
+
+[y, t, x] = lsim(sys, u, t, x0);
+
+%% Plot the states with their TRUE physical meaning (not generic x1/x2)
+figure;
+subplot(2,1,1)
+plot(t, x(:,1), 'b', 'LineWidth', 1.2)
+title('ydot(t)  [state x_1]')
+xlim([0 10])
+grid on
+
+subplot(2,1,2)
+plot(t, x(:,2), 'b', 'LineWidth', 1.2)
+title('y(t)  [state x_2]')
+xlabel('time(s)')
+xlim([0 10])
+grid on
+
+%% Plot output y(t)
+figure;
+plot(t, y, 'b', 'LineWidth', 1.5)
+xlabel('time(s)')
+ylabel('y(t)')
+title('Zero-State Response  y(t)  (u(t) = 1)')
+grid on
+
+%% Alternative: MATLAB's built-in step() does the same thing automatically
+% figure;
+% step(sys)
